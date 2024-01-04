@@ -1,0 +1,116 @@
+CREATE DATABASE IF NOT EXISTS CricketDB;
+USE CricketDB;
+
+CREATE TABLE IF NOT EXISTS Ground (
+    GroundID INT PRIMARY KEY,
+    Name VARCHAR(255),
+    Location VARCHAR(255),
+    SeatingCapacity INT,
+    PitchCondition VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS CricketMatch (
+    MatchID INT PRIMARY KEY,
+    GroundID INT,
+    Date DATE,
+    Teams VARCHAR(255),
+    Outcome VARCHAR(50),
+    FOREIGN KEY (GroundID) REFERENCES Ground(GroundID)
+);
+CREATE TABLE IF NOT EXISTS Facility (
+    FacilityID INT PRIMARY KEY,
+    GroundID INT,
+    Type VARCHAR(50),
+    Description TEXT,
+    Status VARCHAR(50),
+    FOREIGN KEY (GroundID) REFERENCES Ground(GroundID)
+);
+
+
+CREATE TABLE IF NOT EXISTS User (
+    UserID INT PRIMARY KEY,
+    Username VARCHAR(50),
+    Password VARCHAR(50),
+    Role VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS Multimedia (
+    MediaID INT PRIMARY KEY,
+    GroundID INT,
+    Type VARCHAR(50),
+    FileURL VARCHAR(255),
+    Description TEXT,
+    FOREIGN KEY (GroundID) REFERENCES Ground(GroundID)
+);
+
+CREATE TABLE IF NOT EXISTS Event (
+    EventID INT PRIMARY KEY,
+    GroundID INT,
+    Date DATE,
+    Type VARCHAR(50),
+    Status VARCHAR(50),
+    FOREIGN KEY (GroundID) REFERENCES Ground(GroundID)
+);
+
+-- Reset auto-increment counter for GroundID
+ALTER TABLE Ground AUTO_INCREMENT = 1;
+
+INSERT INTO Ground (GroundID, Name, Location, SeatingCapacity, PitchCondition)
+VALUES
+    (1, 'Eden Gardens', 'Kolkata', 67000, 'Good'),
+    (2, 'Wankhede Stadium', 'Mumbai', 55000, 'Excellent'),
+    (3, 'M. Chinnaswamy Stadium', 'Bangalore', 40000, 'Average'),
+    (4, 'Rajiv Gandhi International Stadium', 'Hyderabad', 60000, 'Excellent'),
+    (5, 'Sardar Patel Stadium', 'Ahmedabad', 110000, 'New');
+
+INSERT INTO CricketMatch (MatchID, GroundID, Date, Teams, Outcome)
+VALUES
+    (1, 2, '2023-01-01', 'TeamA vs TeamB', 'TeamA Won'),
+    (2, 3, '2023-02-01', 'TeamX vs TeamY', 'TeamY Won');
+
+    -- Add more records as needed.
+
+INSERT INTO Facility (FacilityID, GroundID, Type, Description, Status)
+VALUES
+    (1, 2, 'Seating', 'VIP Stand', 'Active'),
+    (2, 3, 'Lighting', 'LED Floodlights', 'Inactive');
+    -- Add more records as needed.
+INSERT INTO User (UserID, Username, Password, Role)
+VALUES
+    (1, 'admin', 'admin123', 'Administrator'),
+    (2, 'user1', 'userpass', 'RegularUser');
+    -- Add more records as needed.
+INSERT INTO Multimedia (MediaID, GroundID, Type, FileURL, Description)
+VALUES
+    (1, 2, 'Image', '/images/eden.jpg', 'Aerial view of Eden Gardens'),
+    (2, 3, 'Video', '/videos/wankhede.mp4', 'Highlights of a match at Wankhede');
+    -- Add more records as needed.
+INSERT INTO Event (EventID, GroundID, Date, Type, Status)
+VALUES
+    (1, 2, '2023-03-01', 'T20 Tournament', 'Scheduled'),
+    (2, 3, '2023-04-01', 'Test Match', 'Completed');
+    -- Add more records as needed.
+    
+SELECT * FROM Ground;
+SELECT * FROM CricketMatch;
+SELECT * FROM Facility;
+SELECT * FROM User;
+SELECT * FROM Multimedia;
+SELECT * FROM Event;
+
+SELECT cm.MatchID, cm.Date, cm.Teams, cm.Outcome, g.Name AS GroundName, g.Location
+FROM CricketMatch cm
+JOIN Ground g ON cm.GroundID = g.GroundID;
+
+SELECT Role, COUNT(*) AS UserCount
+FROM User
+GROUP BY Role;
+
+SELECT m.MediaID, m.Type, m.FileURL, m.Description, g.Name AS GroundName
+FROM Multimedia m
+JOIN Ground g ON m.GroundID = g.GroundID;
+
+SELECT e.EventID, e.Date, e.Type, e.Status, g.Location AS GroundLocation
+FROM Event e
+JOIN Ground g ON e.GroundID = g.GroundID;
+
